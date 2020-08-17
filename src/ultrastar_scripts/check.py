@@ -3,7 +3,11 @@ import sys
 import math
 from pathlib import Path
 
-from libultrastar import (print_error, parseBPMLine)
+from libultrastar import (
+    parseBPMLine,
+    minute_fraction_between_beats,
+    print_error
+)
 
 def _fileerror(filename: str, message: str):
     print_error('{}: {}'.format(filename, message))
@@ -16,12 +20,6 @@ def _noteerror(filename: str, linenumber: int, songlinenumber: int, songlinenote
 
 def _error(filename: str, linenumber: int, message: str):
     print_error('{} line {}: {}'.format(filename, linenumber, message))
-
-def _minute_fraction_between_beats(firstBeat: int, secondBeat: int, bpm: float, filename: str):
-    # assumes that firstBeat <= secondBeat
-    if bpm <= 0:
-        print('{}: BPM is not positive'.format(filename))
-    return (secondBeat - firstBeat) / (bpm*4)
 
 def main():
     parser = argparse.ArgumentParser(description='Check ultrastar txt files')
@@ -78,7 +76,7 @@ def main():
                         totalBeats += thislength
                         if thistype == '*':
                             goldenBeats += thislength
-                    
+
                     if prevnoteline:
                         prevparts = prevnoteline.split(' ', 4)
                         prevlength = int(prevparts[2])
@@ -101,7 +99,7 @@ def main():
                                     # ignore if previous note is also short
                                     if start - 2 < prevend and (thislength > 2 or prevlength > thislength):
                                         _noteerror(p, i, songlinenum, songlinenotenum, 'syllable "'+text.strip()+'" starts less than 2 beats after previous syllable')
-                        
+
                         if prevlinebreak:
                             # do some extra linebreak-related checks
                             linebreak = int(prevlinebreak.split(' ')[1])
@@ -110,7 +108,8 @@ def main():
                             elif start - 1 < linebreak:
                                 _error(p, i, 'note starts less than 1 beat after linebreak')
                             # check if the linebreak is at a sensible place
-                            fraction = _minute_fraction_between_beats(prevend, start, bpm, p)
+                            # shared code with fix_linebreaks is deliberately duplicated for performance
+                            fraction = minute_fraction_between_beats(prevend, start, bpm, p)
                             pause = start - prevend
                             if pause >= 2 and pause <= 8:
                                 # 2-8 beats
@@ -146,7 +145,7 @@ def main():
                                 optimalLinebreak = prevend + 10
                                 if linebreak != optimalLinebreak:
                                     _error(p, i, 'pause is more than 16 beats but less than 1s, so linebreak after 10 beats (beat {})'.format(optimalLinebreak))
-                            
+
                             prevlinebreak = None
 
                     prevnoteline = line
@@ -154,6 +153,3 @@ def main():
             idealGoldenBeats = round(totalBeats / 17)
             if goldenBeats != idealGoldenBeats:
                 _fileerror(p, 'ideal golden beats = ' + str(idealGoldenBeats) + ' (current = ' + str(goldenBeats) + ')')
-
-if __name__ == "__main__":
-    main()
