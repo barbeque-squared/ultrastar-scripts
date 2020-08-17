@@ -22,7 +22,7 @@ def _error(filename: str, linenumber: int, message: str):
     print_error('{} line {}: {}'.format(filename, linenumber, message))
 
 def main():
-    parser = argparse.ArgumentParser(description='Check ultrastar txt files')
+    parser = argparse.ArgumentParser(description='Check Ultrastar txt files')
     parser.add_argument('path', nargs='?', type=str, default='.', help='Path to look for txt files (default: .)')
     args = parser.parse_args()
     path=args.path

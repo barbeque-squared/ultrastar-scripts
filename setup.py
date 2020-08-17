@@ -36,6 +36,7 @@ setup(
     entry_points={
         'console_scripts': [
             'ultrastar-check = ultrastar_scripts.check:main'
+            'ultrastar-fix-linebreaks = ultrastar_scripts.fix_linebreaks:main'
         ]
     }
 )
