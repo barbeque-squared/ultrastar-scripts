@@ -2,7 +2,7 @@ import argparse
 import sys
 import math
 
-from libultrastar import parseBPMLine
+from ultrastar_scripts.libultrastar import parseBPMLine
 
 def main():
     parser = argparse.ArgumentParser(description='Multiply BPM in Ultrastar txt files')

@@ -2,7 +2,7 @@ import argparse
 import sys
 import math
 
-from libultrastar import (
+from ultrastar_scripts.libultrastar import (
     parseBPMLine,
     minute_fraction_between_beats
 )

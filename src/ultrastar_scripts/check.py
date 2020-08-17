@@ -3,7 +3,7 @@ import sys
 import math
 from pathlib import Path
 
-from libultrastar import (
+from ultrastar_scripts.libultrastar import (
     parseBPMLine,
     minute_fraction_between_beats,
     print_error
