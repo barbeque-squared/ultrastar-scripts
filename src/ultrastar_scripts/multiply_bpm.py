@@ -5,7 +5,7 @@ import math
 from libultrastar import parseBPMLine
 
 def main():
-    parser = argparse.ArgumentParser(description='Multiply BPM')
+    parser = argparse.ArgumentParser(description='Multiply BPM in Ultrastar txt files')
     parser.add_argument('multiplier', type=float, help='Multiplier')
     parser.add_argument('input', nargs='?', type=argparse.FileType('r'), default=sys.stdin, help='Input file (default: standard input)')
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), default=sys.stdout, help='Output file (default: standard output)')

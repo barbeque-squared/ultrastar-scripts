@@ -38,7 +38,8 @@ setup(
             'ultrastar-check = ultrastar_scripts.check:main',
             'ultrastar-fix-linebreaks = ultrastar_scripts.fix_linebreaks:main',
             'ultrastar-fix-whitespace = ultrastar_scripts.fix_whitespace:main',
-            'ultrastar-multiply-bpm = ultrastar_scripts.multiply_bpm:main'
+            'ultrastar-multiply-bpm = ultrastar_scripts.multiply_bpm:main',
+            'ultrastar-split-lyrics = ultrastar_scripts.split_lyrics:main'
         ]
     }
 )
