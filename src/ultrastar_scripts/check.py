@@ -109,7 +109,7 @@ def main():
                                 _error(p, i, 'note starts less than 1 beat after linebreak')
                             # check if the linebreak is at a sensible place
                             # shared code with fix_linebreaks is deliberately duplicated for performance
-                            fraction = minute_fraction_between_beats(prevend, start, bpm, p)
+                            fraction = minute_fraction_between_beats(prevend, start, bpm)
                             pause = start - prevend
                             if pause >= 2 and pause <= 8:
                                 # 2-8 beats
