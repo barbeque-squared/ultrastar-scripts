@@ -1,6 +1,5 @@
 import sys
 import csv
-from SongType import SongType
 from pathlib import Path
 from enum import Flag
 
