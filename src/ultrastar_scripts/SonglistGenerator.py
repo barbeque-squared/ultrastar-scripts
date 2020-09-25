@@ -22,6 +22,11 @@ class SonglistEntry:
         self.title = title
         self.variants = [songtype]
 
+    def __iter__(self):
+        yield 'artist': self.artist
+        yield 'title': self.title
+        yield 'variants': self.variants
+
     def addVariant(self, songtype: SongType):
         self.variants.append(songtype)
 
@@ -46,7 +51,7 @@ class SonglistGenerator:
                     sys.stderr.write(str(p) + ' does not look like a song file, skipping\n')
 
     def getSonglist(self):
-        return sorted(self.__songlist.items())
+        return [entry for identifier, entry in sorted(self.__songlist.items())]
 
     def writeCsv(self, output):
         writer = csv.writer(output)
