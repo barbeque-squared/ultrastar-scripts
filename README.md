@@ -27,6 +27,19 @@ multiple separate notes. The result will always:
 * as many notes as are necessary are each separated by 1 beat
 * all except the last note are of the same length
 
+### songlist-csv
+Given one or more directories, create a csv of all the different versions.
+Currently detects lossless, instrumental, duets and combinations thereof.
+You can also `import SonglistGenerator` in your own scripts:
+
+```
+import SonglistGenerator
+
+sg = SonglistGenerator(['/path/1', '/path/2'])
+sg.generate()
+songs = sg.getSonglist()
+```
+
 ## The general workflow
 These scripts support very much a divide-and-conquer workflow when it comes
 to creating new songs, in the sense that generally, we first time entire
@@ -50,4 +63,3 @@ multiple tones) but I find this to be way less tedious.
 A number of additions are planned for the future, at least:
 
 * have `check` able to also run on individual files instead of directories
-* songlist csv generator (plus supporting scripts to turn that into a webpage and pdf)
