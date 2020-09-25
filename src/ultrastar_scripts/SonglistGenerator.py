@@ -15,6 +15,17 @@ class SongType(Flag):
     LOSSLESS_DUET = LOSSLESS | DUET
     LOSSLESS_INSTRUMENTAL_DUET = LOSSLESS | INSTRUMENTAL | DUET
 
+
+class SonglistEntry:
+    def __init__(self, artist: str, title: str, songtype: SongType):
+        self.artist = artist
+        self.title = title
+        self.variants = [songtype]
+
+    def addVariant(self, songtype: SongType):
+        self.variants.append(songtype)
+
+
 class SonglistGenerator:
     __songlist = {}
     
@@ -30,7 +41,7 @@ class SonglistGenerator:
                     if identifier in self.__songlist:
                         self.__songlist[identifier].addVariant(song.songtype)
                     else:
-                        self.__songlist[identifier] = self._SonglistEntry(song.artist, song.title, song.songtype)
+                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.songtype)
                 else:
                     sys.stderr.write(str(p) + ' does not look like a song file, skipping\n')
 
@@ -100,12 +111,3 @@ class SonglistGenerator:
 
         def identifier(self):
             return ' - '.join([self.artist, self.title])
-
-    class _SonglistEntry:
-        def __init__(self, artist: str, title: str, songtype: SongType):
-            self.artist = artist
-            self.title = title
-            self.variants = [songtype]
-
-        def addVariant(self, songtype: SongType):
-            self.variants.append(songtype)
