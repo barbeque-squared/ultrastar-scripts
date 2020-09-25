@@ -2,6 +2,19 @@ import sys
 import csv
 from SongType import SongType
 from pathlib import Path
+from enum import Flag
+
+class SongType(Flag):
+    # base values
+    LOSSY = 0
+    LOSSLESS = 1
+    INSTRUMENTAL = 2
+    DUET = 4
+    # combinations
+    INSTRUMENTAL_DUET = INSTRUMENTAL | DUET
+    LOSSLESS_INSTRUMENTAL = LOSSLESS | INSTRUMENTAL
+    LOSSLESS_DUET = LOSSLESS | DUET
+    LOSSLESS_INSTRUMENTAL_DUET = LOSSLESS | INSTRUMENTAL | DUET
 
 class SonglistGenerator:
     __songlist = {}
