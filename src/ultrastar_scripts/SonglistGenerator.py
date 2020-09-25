@@ -35,7 +35,7 @@ class SonglistGenerator:
                     sys.stderr.write(str(p) + ' does not look like a song file, skipping\n')
 
     def getSonglist(self):
-        return __songlist
+        return self.__songlist
 
     def writeCsv(self, output):
         writer = csv.writer(output)
