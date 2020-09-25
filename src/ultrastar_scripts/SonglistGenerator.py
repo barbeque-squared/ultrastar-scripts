@@ -23,9 +23,9 @@ class SonglistEntry:
         self.variants = [songtype]
 
     def __iter__(self):
-        yield 'artist': self.artist
-        yield 'title': self.title
-        yield 'variants': self.variants
+        yield 'artist', self.artist
+        yield 'title', self.title
+        yield 'variants', self.variants
 
     def addVariant(self, songtype: SongType):
         self.variants.append(songtype)
