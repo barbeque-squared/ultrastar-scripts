@@ -1,9 +1,9 @@
 import sys
 import csv
 from pathlib import Path
-from enum import Flag
+from enum import IntFlag
 
-class SongType(Flag):
+class SongType(IntFlag):
     # base values
     LOSSY = 0
     LOSSLESS = 1
