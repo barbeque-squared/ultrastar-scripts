@@ -40,6 +40,9 @@ def main():
             totalBeats = 0
             goldenBeats = 0
             for i, line in enumerate(reader):
+                # remove BOM
+                if line.startswith('\ufeff'):
+                    line = line[1:]
                 if end:
                     _error(p, i, 'extra lines after end')
                 elif line.startswith('#BPM'):
