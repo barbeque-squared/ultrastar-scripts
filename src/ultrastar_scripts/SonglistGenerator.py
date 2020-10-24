@@ -87,6 +87,9 @@ class SonglistGenerator:
         with open(path) as reader:
             try:
                 for line in reader:
+                    # remove BOM
+                    if line.startswith('\ufeff'):
+                        line = line[1:]
                     if line.startswith('#ARTIST:'):
                         artist = line.strip().replace('#ARTIST:', '', 1)
                     elif line.startswith('#TITLE:'):
