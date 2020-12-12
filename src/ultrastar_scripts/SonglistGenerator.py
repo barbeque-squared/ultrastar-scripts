@@ -72,7 +72,7 @@ class SonglistGenerator:
             'Lossless Duet',
             'Lossless Duet Instrumental'
         ])
-        for identifier, entry in sorted(self.__songlist.items(), key=str.casefold):
+        for identifier, entry in sorted(self.__songlist.items()):
             writer.writerow([
                 entry.artist,
                 entry.title,
@@ -135,4 +135,4 @@ class SonglistGenerator:
             self.title = ' '.join(title.split())
 
         def identifier(self):
-            return ' - '.join([self.artist, self.title])
+            return ' - '.join([self.artist, self.title]).casefold()
