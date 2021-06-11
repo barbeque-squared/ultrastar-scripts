@@ -2,6 +2,8 @@ import sys
 import csv
 from pathlib import Path
 from enum import IntFlag
+import yaml
+from itertools import chain
 
 class SongType(IntFlag):
     # base values
@@ -17,17 +19,19 @@ class SongType(IntFlag):
 
 
 class SonglistEntry:
-    def __init__(self, artist: str, title: str, language: str, songtype: SongType):
+    def __init__(self, artist: str, title: str, language: str, songtype: SongType, dmx: int):
         self.artist = artist
         self.title = title
         self.language = language
         self.variants = [songtype]
+        self.dmx = dmx
 
     def __iter__(self):
         yield 'artist', self.artist
         yield 'title', self.title
         yield 'language', self.language
         yield 'variants', self.variants
+        yield 'dmx', self.dmx
 
     def addVariant(self, songtype: SongType):
         self.variants.append(songtype)
@@ -36,8 +40,10 @@ class SonglistEntry:
 class SonglistGenerator:
     __songlist = {}
     
-    def __init__(self, paths: [str]):
+    def __init__(self, paths: [str], dmxpaths: [str] = []):
         self.__paths = paths
+        self.__dmxpaths = dmxpaths
+        self._dmxconfig = self._loadDmxConfig()
     
     def generate(self):
         for path in self.__paths:
@@ -50,7 +56,7 @@ class SonglistGenerator:
                             sys.stderr.write(str(p) + ' uses different language\n')
                         self.__songlist[identifier].addVariant(song.songtype)
                     else:
-                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.language, song.songtype)
+                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.language, song.songtype, song.dmx)
                 else:
                     sys.stderr.write(str(p) + ' does not look like a song file, skipping\n')
 
@@ -87,6 +93,41 @@ class SonglistGenerator:
                 int(SongType.LOSSLESS_INSTRUMENTAL_DUET in entry.variants)
             ])
 
+    ### DMX/YAML FUNCTIONS START ###
+    def _loadDmxConfig(self):
+        res = []
+        for path in self.__dmxpaths:
+            dmxs = list(map(lambda p: self._loadDmxFile(p), Path(path).rglob('*.yml')))
+            res += list(chain.from_iterable(dmxs))
+        return res
+
+    def _loadDmxFile(self, path):
+        with open(path, 'r') as p:
+            res = []
+            for c in yaml.safe_load_all(p):
+                dmxcount = 1 + len(c.get('instructions', []))
+                res.append({'artist': c['artist'], 'title': c['title'],  'dmx': dmxcount, 'path': p.name})
+            return res
+
+    # will return the config obj for the best match, or None if nothing matches
+    def _bestDmxConfigMatch(self, artist: str, title: str):
+        l_artist = artist.lower()
+        l_title = title.lower()
+        candidates = list(filter(
+            lambda o: l_artist.startswith(o['artist'].lower()) and l_title.startswith(o['title'].lower()),
+            self._dmxconfig
+        ))
+        if len(candidates) < 1:
+            return None
+        return max(candidates, key=lambda c: len(c['artist']+c['title']))
+    
+    def _dmxCount(self, artist: str, title: str):
+        match = self._bestDmxConfigMatch(artist, title)
+        if match:
+            return match['dmx']
+        return 0
+    ### DMX/YAML FUNCTIONS END ###
+
     def _loadSong(self, path: str):
         artist = None
         title = None
@@ -104,7 +145,8 @@ class SonglistGenerator:
                     elif line.startswith('#LANGUAGE:'):
                         language = line.strip().replace('#LANGUAGE:', '', 1)
                     if artist is not None and title is not None and language is not None:
-                        return self._Song(artist, title, language)
+                        dmx = self._dmxCount(artist, title)
+                        return self._Song(artist, title, language, dmx)
                     elif not line.startswith('#') and (artist is not None or title is not None or language is not None):
                         if artist is None:
                             raise Exception(str(path) + ' does not set #ARTIST')
@@ -116,10 +158,11 @@ class SonglistGenerator:
                 raise Exception('error while loading ' + str(path)) from ude
 
     class _Song:
-        def __init__(self, artist: str, title: str, language: str):
+        def __init__(self, artist: str, title: str, language: str, dmx: int):
             songtype = SongType.LOSSY
             self.artist = artist
             self.language = language
+            self.dmx = dmx
             # parse title
             types = {
                 '(Lossless)': SongType.LOSSLESS,
