@@ -4,6 +4,13 @@ import math
 
 from ultrastar_scripts.libultrastar import parseBPMLine
 
+# rounds the bpm to 0, 1 or 2 digits, whatever is necessary
+def roundBpmTag(bpm: float) -> str:
+    rounded = str(round(bpm, 2))
+    if rounded.endswith('.0'):
+        return rounded[:-2]
+    return rounded
+
 def main():
     parser = argparse.ArgumentParser(description='Multiply BPM in Ultrastar txt files')
     parser.add_argument('multiplier', type=float, help='Multiplier')
@@ -16,7 +23,7 @@ def main():
     for line in args.input.readlines():
         if line.startswith('#') or line.startswith('E'):
             if (line.startswith('#BPM')):
-                output.write('#BPM:' + str(parseBPMLine(line)*multiplier)+'\n')
+                output.write('#BPM:' + roundBpmTag(parseBPMLine(line)*multiplier)+'\n')
             else:
                 output.write(line)
         elif line.startswith('-'):
