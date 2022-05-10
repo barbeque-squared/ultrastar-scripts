@@ -14,7 +14,7 @@ def main():
     replacer = {'_': ' ', '+': ''}.get(separator)
 
     for line in args.input.readlines():
-        if line.startswith(':') or line.startswith('F') or line.startswith('*'):
+        if line.startswith(':') or line.startswith('F') or line.startswith('*') or line.startswith('R'):
             # splitting
             parts = line.strip().split(' ', 4)
             content = parts[4]
