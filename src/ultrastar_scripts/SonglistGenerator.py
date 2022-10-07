@@ -106,7 +106,7 @@ class SonglistGenerator:
             res = []
             for c in yaml.safe_load_all(p):
                 dmxcount = 1 + len(c.get('instructions', []))
-                res.append({'artist': c['artist'], 'title': c['title'],  'dmx': dmxcount, 'path': p.name})
+                res.append({'artist': c['artist'], 'title': c['title'], 'same-as': c.get('same-as'), 'dmx': dmxcount, 'path': p.name})
             return res
 
     # will return the config obj for the best match, or None if nothing matches
@@ -119,7 +119,13 @@ class SonglistGenerator:
         ))
         if len(candidates) < 1:
             return None
-        return max(candidates, key=lambda c: len(c['artist']+c['title']))
+        song = max(candidates, key=lambda c: len(c['artist']+c['title']))
+        if song['same-as'] is not None:
+            artist = song['same-as'].get('artist', song['artist'])
+            title = song['same-as'].get('title', song['title'])
+            # WARNING: there is no infinite recursion safeguarding
+            song = self._bestDmxConfigMatch(artist, title)
+        return song
     
     def _dmxCount(self, artist: str, title: str):
         match = self._bestDmxConfigMatch(artist, title)
