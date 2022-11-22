@@ -1,7 +1,7 @@
 import argparse
 import sys
 import os
-from SonglistGenerator import SonglistGenerator
+from ultrastar_scripts.SonglistGenerator import SonglistGenerator
 
 def dir_path(path):
     if os.path.isdir(path):
