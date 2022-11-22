@@ -41,6 +41,7 @@ setup(
             'ultrastar-multiply-bpm = ultrastar_scripts.multiply_bpm:main',
             'ultrastar-split-lyrics = ultrastar_scripts.split_lyrics:main',
             'ultrastar-songlist-csv = ultrastar_scripts.songlist_csv:main'
+            'ultrastar-songlist-json = ultrastar_scripts.songlist_json:main'
         ]
     }
 )

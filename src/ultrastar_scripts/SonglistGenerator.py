@@ -1,5 +1,6 @@
 import sys
 import csv
+import json
 from pathlib import Path
 from enum import IntFlag
 import yaml
@@ -92,6 +93,10 @@ class SonglistGenerator:
                 int(SongType.LOSSLESS_DUET in entry.variants),
                 int(SongType.LOSSLESS_INSTRUMENTAL_DUET in entry.variants)
             ])
+
+    def writeJson(self, output):
+        with open(output, 'w') as outfile:
+            json.dump({'songlist': list(map(dict, self.getSonglist()))}, outfile, indent=4)
 
     ### DMX/YAML FUNCTIONS START ###
     def _loadDmxConfig(self):
