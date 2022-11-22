@@ -95,8 +95,7 @@ class SonglistGenerator:
             ])
 
     def writeJson(self, output):
-        with open(output, 'w') as outfile:
-            json.dump({'songlist': list(map(dict, self.getSonglist()))}, outfile, indent=4)
+        json.dump({'songlist': list(map(dict, self.getSonglist()))}, output, indent=4)
 
     ### DMX/YAML FUNCTIONS START ###
     def _loadDmxConfig(self):
