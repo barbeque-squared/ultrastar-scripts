@@ -177,6 +177,7 @@ class SonglistGenerator:
             types = {
                 '(Lossless)': SongType.LOSSLESS,
                 '(Instrumental)': SongType.INSTRUMENTAL,
+                '(BGM Instrumental)': SongType.INSTRUMENTAL,
                 '(Duet)': SongType.DUET
             }
             for k, v in types.items():
