@@ -27,8 +27,8 @@ multiple separate notes. The result will always:
 * as many notes as are necessary are each separated by 1 beat
 * all except the last note are of the same length
 
-### songlist-csv
-Given one or more directories, create a csv of all the different versions.
+### songlist-json/csv
+Given one or more directories, create a json or csv of all the different versions.
 Currently detects lossless, instrumental, duets and combinations thereof.
 You can also `import SonglistGenerator` in your own scripts:
 
