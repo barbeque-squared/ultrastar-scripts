@@ -20,10 +20,11 @@ class SongType(IntFlag):
 
 
 class SonglistEntry:
-    def __init__(self, artist: str, title: str, language: str, songtype: SongType, dmx: int):
+    def __init__(self, artist: str, title: str, language: str, year: int, songtype: SongType, dmx: int):
         self.artist = artist
         self.title = title
         self.language = language
+        self.year = year
         self.variants = [songtype]
         self.dmx = dmx
 
@@ -31,6 +32,7 @@ class SonglistEntry:
         yield 'artist', self.artist
         yield 'title', self.title
         yield 'language', self.language
+        yield 'year', self.year
         yield 'variants', self.variants
         yield 'dmx', self.dmx
 
@@ -57,7 +59,7 @@ class SonglistGenerator:
                             sys.stderr.write(str(p) + ' uses different language\n')
                         self.__songlist[identifier].addVariant(song.songtype)
                     else:
-                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.language, song.songtype, song.dmx)
+                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.language, song.year, song.songtype, song.dmx)
                 else:
                     sys.stderr.write(str(p) + ' does not look like a song file, skipping\n')
 
@@ -142,6 +144,7 @@ class SonglistGenerator:
         artist = None
         title = None
         language = None
+        year = None
         with open(path) as reader:
             try:
                 for line in reader:
@@ -154,11 +157,23 @@ class SonglistGenerator:
                         title = line.strip().replace('#TITLE:', '', 1)
                     elif line.startswith('#LANGUAGE:'):
                         language = line.strip().replace('#LANGUAGE:', '', 1)
-                    if artist is not None and title is not None and language is not None:
-                        dmx = self._dmxCount(artist, title)
-                        return self._Song(artist, title, language, dmx)
-                    elif not line.startswith('#') and (artist is not None or title is not None or language is not None):
-                        if artist is None:
+                    elif line.startswith('#YEAR:'):
+                        try:
+                            year = int(line.strip().replace('#YEAR:', '', 1))
+                        except ValueError:
+                            raise Exception(str(path) + ' cannot parse #YEAR')
+                    elif line.startswith('#'):
+                        # do nothing as we're still processing tags
+                        pass
+                    else:
+                        # we've parsed all the tags
+                        if artist is None and title is None and language is None:
+                            # this most likely was not a song file, just ignore it
+                            return None
+                        elif artist is not None and title is not None and language is not None:
+                            dmx = self._dmxCount(artist, title)
+                            return self._Song(artist, title, language, year, dmx)
+                        elif artist is None:
                             raise Exception(str(path) + ' does not set #ARTIST')
                         elif title is None:
                             raise Exception(str(path) + ' does not set #TITLE')
@@ -168,10 +183,11 @@ class SonglistGenerator:
                 raise Exception('error while loading ' + str(path)) from ude
 
     class _Song:
-        def __init__(self, artist: str, title: str, language: str, dmx: int):
+        def __init__(self, artist: str, title: str, language: str, year: int, dmx: int):
             songtype = SongType.LOSSY
             self.artist = artist
             self.language = language
+            self.year = year
             self.dmx = dmx
             # parse title
             types = {
