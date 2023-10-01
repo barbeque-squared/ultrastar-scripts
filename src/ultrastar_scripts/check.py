@@ -9,6 +9,9 @@ from ultrastar_scripts.libultrastar import (
     print_error
 )
 
+MIN_BEATS_BETWEEN_WORDS = 3
+MIN_BEATS_BETWEEN_SYLLABLES = 2
+
 def _fileerror(filename: str, message: str):
     print_error('{}: {}'.format(filename, message))
 
@@ -95,13 +98,13 @@ def main():
                                 if text.startswith(' '):
                                     # new word in sentence
                                     # ignore if previous note is also short
-                                    if start - 3 < prevend and (thislength > 3 or prevlength > thislength):
-                                        _noteerror(p, i, songlinenum, songlinenotenum, 'new word "'+text.strip()+'" starts less than 3 beats after previous word')
+                                    if start - MIN_BEATS_BETWEEN_WORDS < prevend and (thislength > MIN_BEATS_BETWEEN_WORDS or prevlength > thislength):
+                                        _noteerror(p, i, songlinenum, songlinenotenum, 'new word "'+text.strip()+'" starts less than '+str(MIN_BEATS_BETWEEN_WORDS)+' beats after previous word')
                                 else:
                                     # next syllable of word
                                     # ignore if previous note is also short
-                                    if start - 2 < prevend and (thislength > 2 or prevlength > thislength):
-                                        _noteerror(p, i, songlinenum, songlinenotenum, 'syllable "'+text.strip()+'" starts less than 2 beats after previous syllable')
+                                    if start - MIN_BEATS_BETWEEN_SYLLABLES < prevend and (thislength > MIN_BEATS_BETWEEN_SYLLABLES or prevlength > thislength):
+                                        _noteerror(p, i, songlinenum, songlinenotenum, 'syllable "'+text.strip()+'" starts less than '+str(MIN_BEATS_BETWEEN_SYLLABLES)+' beats after previous syllable')
 
                         if prevlinebreak:
                             # do some extra linebreak-related checks
