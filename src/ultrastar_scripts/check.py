@@ -9,7 +9,7 @@ from ultrastar_scripts.libultrastar import (
     print_error
 )
 
-MIN_BEATS_BETWEEN_WORDS = 3
+MIN_BEATS_BETWEEN_WORDS = 2
 MIN_BEATS_BETWEEN_SYLLABLES = 2
 
 def _fileerror(filename: str, message: str):
