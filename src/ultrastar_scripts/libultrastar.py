@@ -1,8 +1,20 @@
 def parseFloatLine(line: str) -> float:
-    return parseFloat(line.split(':')[1])
+    return parseFloat(line.split(':', 1)[1])
 
 def parseFloat(val: str) -> float:
     return float(val.strip().replace(',', '.', 1))
+
+def parseIntLine(line: str) -> int:
+    return parseInt(line.split(':', 1)[1])
+
+def parseInt(val: str) -> int:
+    return int(val)
+
+def parseTextLine(line: str) -> str:
+    val = line.split(':', 1)[1].strip()
+    if len(val) == 0:
+        return None
+    return val
 
 def minute_fraction_between_beats(firstBeat: int, secondBeat: int, bpm: float) -> float:
     if bpm <= 0:

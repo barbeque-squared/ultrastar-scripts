@@ -5,6 +5,8 @@ from pathlib import Path
 
 from ultrastar_scripts.libultrastar import (
     parseFloatLine,
+    parseIntLine,
+    parseTextLine,
     minute_fraction_between_beats,
     print_error
 )
@@ -42,6 +44,11 @@ def main():
             # golden note computations: ideally, 1/17 of all notes are golden (this equals 8000 normal points + 1000 golden points)
             totalBeats = 0
             goldenBeats = 0
+            # some other things checked at the end of a file
+            year = None
+            genre = None
+            edition = None
+            language = None
             for i, line in enumerate(reader):
                 # remove BOM
                 if line.startswith('\ufeff'):
@@ -50,6 +57,14 @@ def main():
                     _error(p, i, 'extra lines after end')
                 elif line.startswith('#BPM:'):
                     bpm = parseFloatLine(line)
+                elif line.startswith('#YEAR:'):
+                    year = parseIntLine(line)
+                elif line.startswith('#GENRE:'):
+                    genre = parseTextLine(line)
+                elif line.startswith('#EDITION:'):
+                    edition = parseTextLine(line)
+                elif line.startswith('#LANGUAGE:'):
+                    language = parseTextLine(line)
                 elif line.startswith('P'):
                     prevnoteline = None
                     prevlinebreak = None
@@ -159,3 +174,15 @@ def main():
             idealGoldenBeats = round(totalBeats / 17)
             if goldenBeats != idealGoldenBeats:
                 _fileerror(p, 'ideal golden beats = ' + str(idealGoldenBeats) + ' (current = ' + str(goldenBeats) + ')')
+            # some other things checked at the end of a file
+            if year is None:
+                _fileerror(p, '#YEAR is not set')
+            elif year < 1900 or year > 2100:
+                _fileerror(p, '#YEAR probably has an incorrect value, current value = ' + str(year))
+            if language is None:
+                _fileerror(p, '#LANGUAGE is not set')
+            if genre is None:
+                _fileerror(p, '#GENRE is not set')
+            # this check is for My Little Karaoke
+            elif genre == 'Pony' and edition != 'My Little Pony':
+                _fileerror(p, 'if #GENRE is "Pony", #EDITION should be set to "My Little Pony"')
