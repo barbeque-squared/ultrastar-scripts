@@ -3,7 +3,7 @@ import sys
 import math
 
 from ultrastar_scripts.libultrastar import (
-    parseBPMLine,
+    parseFloatLine,
     minute_fraction_between_beats
 )
 
@@ -48,7 +48,7 @@ def main():
         if line.startswith('#'):
             output.write(line)
             if line.startswith('#BPM:'):
-                bpm = parseBPMLine(line)
+                bpm = parseFloatLine(line)
         elif line.startswith('E') or line.startswith('P'):
             output.write(line)
         elif line.startswith('-'):

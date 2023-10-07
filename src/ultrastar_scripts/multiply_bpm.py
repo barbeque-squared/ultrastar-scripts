@@ -2,7 +2,7 @@ import argparse
 import sys
 import math
 
-from ultrastar_scripts.libultrastar import parseBPMLine
+from ultrastar_scripts.libultrastar import parseFloatLine
 
 # rounds the bpm to 0, 1 or 2 digits, whatever is necessary
 def roundBpmTag(bpm: float) -> str:
@@ -23,7 +23,7 @@ def main():
     for line in args.input.readlines():
         if line.startswith('#') or line.startswith('E'):
             if (line.startswith('#BPM')):
-                output.write('#BPM:' + roundBpmTag(parseBPMLine(line)*multiplier)+'\n')
+                output.write('#BPM:' + roundBpmTag(parseFloatLine(line)*multiplier)+'\n')
             else:
                 output.write(line)
         elif line.startswith('-'):

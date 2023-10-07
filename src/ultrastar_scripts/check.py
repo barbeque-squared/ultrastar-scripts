@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 
 from ultrastar_scripts.libultrastar import (
-    parseBPMLine,
+    parseFloatLine,
     minute_fraction_between_beats,
     print_error
 )
@@ -49,7 +49,7 @@ def main():
                 if end:
                     _error(p, i, 'extra lines after end')
                 elif line.startswith('#BPM'):
-                    bpm = parseBPMLine(line)
+                    bpm = parseFloatLine(line)
                 elif line.startswith('P'):
                     prevnoteline = None
                     prevlinebreak = None

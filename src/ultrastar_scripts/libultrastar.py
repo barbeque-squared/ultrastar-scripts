@@ -1,9 +1,8 @@
-# BPM
-def parseBPMLine(line: str) -> float:
-    return parseBPM(line.split(':')[1])
+def parseFloatLine(line: str) -> float:
+    return parseFloat(line.split(':')[1])
 
-def parseBPM(bpm: str) -> float:
-    return float(bpm.strip().replace(',', '.', 1))
+def parseFloat(val: str) -> float:
+    return float(val.strip().replace(',', '.', 1))
 
 def minute_fraction_between_beats(firstBeat: int, secondBeat: int, bpm: float) -> float:
     if bpm <= 0:
