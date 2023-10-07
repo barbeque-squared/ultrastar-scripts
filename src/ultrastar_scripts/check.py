@@ -48,7 +48,7 @@ def main():
                     line = line[1:]
                 if end:
                     _error(p, i, 'extra lines after end')
-                elif line.startswith('#BPM'):
+                elif line.startswith('#BPM:'):
                     bpm = parseFloatLine(line)
                 elif line.startswith('P'):
                     prevnoteline = None

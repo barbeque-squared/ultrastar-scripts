@@ -22,7 +22,7 @@ def main():
 
     for line in args.input.readlines():
         if line.startswith('#') or line.startswith('E'):
-            if (line.startswith('#BPM')):
+            if (line.startswith('#BPM:')):
                 output.write('#BPM:' + roundBpmTag(parseFloatLine(line)*multiplier)+'\n')
             else:
                 output.write(line)
