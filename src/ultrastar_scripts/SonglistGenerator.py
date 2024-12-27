@@ -110,9 +110,10 @@ class SonglistGenerator:
     def _loadDmxFile(self, path):
         with open(path, 'r') as p:
             res = []
-            for c in yaml.safe_load_all(p):
-                dmxcount = 1 + len(c.get('instructions', []))
-                res.append({'artist': c['artist'], 'title': c['title'], 'same-as': c.get('same-as'), 'dmx': dmxcount, 'path': p.name})
+            for document in yaml.safe_load_all(p):
+                for c in document['songs']:
+                    dmxcount = 1 + len(c.get('instructions', []))
+                    res.append({'artist': c['artist'], 'title': c['title'], 'same-as': c.get('same-as'), 'dmx': dmxcount, 'path': p.name})
             return res
 
     # will return the config obj for the best match, or None if nothing matches
