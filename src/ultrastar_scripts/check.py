@@ -11,17 +11,11 @@ from ultrastar_scripts.libultrastar import (
     print_error
 )
 
-MIN_BEATS_BETWEEN_WORDS = 2
-MIN_BEATS_BETWEEN_SYLLABLES = 1
-
 def _fileerror(filename: str, message: str):
     print_error('{}: {}'.format(filename, message))
 
 def _lineerror(filename: str, linenumber: int, songlinenumber: int, message: str):
     print_error('{} line {} (s{}): {}'.format(filename, linenumber, songlinenumber, message))
-
-def _noteerror(filename: str, linenumber: int, songlinenumber: int, songlinenotenumber: int, message: str):
-    print_error('{} line {} (s{}n{}): {}'.format(filename, linenumber, songlinenumber, songlinenotenumber, message))
 
 def _error(filename: str, linenumber: int, message: str):
     print_error('{} line {}: {}'.format(filename, linenumber, message))
@@ -105,21 +99,6 @@ def main():
                         start = int(parts[1])
                         if start < prevend:
                             _error(p, i, 'note starts too early')
-                        else:
-                            text = parts[4]
-                            prevtype = prevparts[0]
-                            # ignore if either of the notes is freestyle, or if the note length <= the gap
-                            if prevtype != 'F' and thistype != 'F' and start - prevend < thislength:
-                                if text.startswith(' '):
-                                    # new word in sentence
-                                    # ignore if previous note is also short
-                                    if start - MIN_BEATS_BETWEEN_WORDS < prevend and (thislength > MIN_BEATS_BETWEEN_WORDS or prevlength > thislength):
-                                        _noteerror(p, i, songlinenum, songlinenotenum, 'new word "'+text.strip()+'" starts less than '+str(MIN_BEATS_BETWEEN_WORDS)+' beats after previous word')
-                                else:
-                                    # next syllable of word
-                                    # ignore if previous note is also short
-                                    if start - MIN_BEATS_BETWEEN_SYLLABLES < prevend and (thislength > MIN_BEATS_BETWEEN_SYLLABLES or prevlength > thislength):
-                                        _noteerror(p, i, songlinenum, songlinenotenum, 'syllable "'+text.strip()+'" starts less than '+str(MIN_BEATS_BETWEEN_SYLLABLES)+' beats after previous syllable')
 
                         if prevlinebreak:
                             # do some extra linebreak-related checks
