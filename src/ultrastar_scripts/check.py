@@ -14,9 +14,6 @@ from ultrastar_scripts.libultrastar import (
 def _fileerror(filename: str, message: str):
     print_error('{}: {}'.format(filename, message))
 
-def _lineerror(filename: str, linenumber: int, songlinenumber: int, message: str):
-    print_error('{} line {} (s{}): {}'.format(filename, linenumber, songlinenumber, message))
-
 def _error(filename: str, linenumber: int, message: str):
     print_error('{} line {}: {}'.format(filename, linenumber, message))
 
@@ -74,8 +71,6 @@ def main():
                         linebreak = int(line.split(' ')[1])
                         if linebreak < prevend:
                             _error(p, i, 'linebreak too early')
-                        elif linebreak - 3 < prevend:
-                            _lineerror(p, i, songlinenum, 'linebreak less than 3 beats after note end')
                     prevlinebreak = line
                     songlinenum += 1
                     songlinenotenum = 0
