@@ -11,6 +11,14 @@ from ultrastar_scripts.libultrastar import (
     print_error
 )
 
+class PlayerInfo:
+    # golden note computations: ideally, 1/17 of all notes are golden (this equals 8000 normal points + 1000 golden points)
+    total_beats = 0
+    golden_beats = 0
+
+    def __init__(self, player_number: int):
+        self.player_number = player_number
+
 def _fileerror(filename: str, message: str):
     print_error('{}: {}'.format(filename, message))
 
@@ -25,6 +33,8 @@ def main():
 
     for p in sorted(Path(path).glob('**/*.txt')):
         with open(p) as reader:
+            players = [PlayerInfo(1)]
+            active_player = players[0]
             end = False
             bpm = 0
             two_seconds = 0
@@ -32,9 +42,6 @@ def main():
             prevlinebreak = None
             songlinenum = 1
             songlinenotenum = 0
-            # golden note computations: ideally, 1/17 of all notes are golden (this equals 8000 normal points + 1000 golden points)
-            totalBeats = 0
-            goldenBeats = 0
             # some other things checked at the end of a file
             year = None
             genre = None
@@ -57,6 +64,10 @@ def main():
                 elif line.startswith('#LANGUAGE:'):
                     language = parseTextLine(line)
                 elif line.startswith('P'):
+                    new_player_number = int(line[1:])
+                    while len(players) < new_player_number:
+                        players.append(PlayerInfo(len(players) + 1))
+                    active_player = players[new_player_number - 1]
                     prevnoteline = None
                     prevlinebreak = None
                 elif line.startswith('-'):
@@ -83,9 +94,9 @@ def main():
                     thistype = parts[0]
                     thislength = int(parts[2])
                     if thistype != 'F':
-                        totalBeats += thislength
+                        active_player.total_beats += thislength
                         if thistype == '*':
-                            goldenBeats += thislength
+                            active_player.golden_beats += thislength
 
                     if prevnoteline:
                         prevparts = prevnoteline.split(' ', 4)
@@ -145,9 +156,13 @@ def main():
 
                     prevnoteline = line
             # golden note computations
-            idealGoldenBeats = round(totalBeats / 17)
-            if goldenBeats != idealGoldenBeats:
-                _fileerror(p, 'ideal golden beats = ' + str(idealGoldenBeats) + ' (current = ' + str(goldenBeats) + ')')
+            for player in players:
+                idealGoldenBeats = round(player.total_beats / 17)
+                if player.golden_beats != idealGoldenBeats:
+                    message = 'ideal golden beats'
+                    if len(players) > 1:
+                        message += ' for P' + str(player.player_number)
+                    _fileerror(p, message + ' = ' + str(idealGoldenBeats) + ' (current = ' + str(player.golden_beats) + ')')
             # some other things checked at the end of a file
             if year is None:
                 _fileerror(p, '#YEAR is not set')
