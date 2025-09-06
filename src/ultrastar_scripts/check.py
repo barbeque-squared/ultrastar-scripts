@@ -20,10 +20,10 @@ class PlayerInfo:
         self.player_number = player_number
 
 def _fileerror(filename: str, message: str):
-    print_error('{}: {}'.format(filename, message))
+    print('{}: {}'.format(filename, message))
 
 def _error(filename: str, linenumber: int, message: str):
-    print_error('{} line {}: {}'.format(filename, linenumber, message))
+    print('{} line {}: {}'.format(filename, linenumber, message))
 
 def main():
     parser = argparse.ArgumentParser(description='Check Ultrastar txt files')
