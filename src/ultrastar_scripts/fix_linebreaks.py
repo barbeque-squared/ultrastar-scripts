@@ -59,7 +59,7 @@ def main():
                 prevparts = prevnoteline.split(' ', 3)
                 prevend = int(prevparts[1]) + int(prevparts[2])
                 start = int(line.split(' ')[1])
-                output.write('- ' + str(_optimal_linebreak(prevend, start, bpm)) + '\n')
+                output.write('- ' + str(_optimal_linebreak(prevend, start, bpm)) + '\r\n')
                 linebreak = False
             # regular handling
             output.write(line)
