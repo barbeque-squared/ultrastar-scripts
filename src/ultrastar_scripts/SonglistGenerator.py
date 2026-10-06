@@ -18,15 +18,17 @@ class SongType(IntFlag):
     LOSSLESS_DUET = LOSSLESS | DUET
     LOSSLESS_INSTRUMENTAL_DUET = LOSSLESS | INSTRUMENTAL | DUET
 
+IMPORTANT_TAGS = ['explicit', 'questionable', 'suggestive', 'vulgar', 'seizure warning']
 
 class SonglistEntry:
-    def __init__(self, artist: str, title: str, language: str, year: int, songtype: SongType, dmx: int):
+    def __init__(self, artist: str, title: str, language: str, year: int, songtype: SongType, dmx: int, tags: [str]):
         self.artist = artist
         self.title = title
         self.language = language
         self.year = year
         self.variants = [songtype]
         self.dmx = dmx
+        self.tags = tags
 
     def __iter__(self):
         yield 'artist', self.artist
@@ -35,6 +37,7 @@ class SonglistEntry:
         yield 'year', self.year
         yield 'variants', self.variants
         yield 'dmx', self.dmx
+        yield 'tags', self.tags
 
     def addVariant(self, songtype: SongType):
         self.variants.append(songtype)
@@ -59,7 +62,8 @@ class SonglistGenerator:
                             sys.stderr.write(str(p) + ' uses different language\n')
                         self.__songlist[identifier].addVariant(song.songtype)
                     else:
-                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.language, song.year, song.songtype, song.dmx)
+                        # it will only use tags from whichever variant it encounters first
+                        self.__songlist[identifier] = SonglistEntry(song.artist, song.title, song.language, song.year, song.songtype, song.dmx, song.tags)
                 else:
                     sys.stderr.write(str(p) + ' does not look like a song file, skipping\n')
 
@@ -146,6 +150,7 @@ class SonglistGenerator:
         title = None
         language = None
         year = None
+        tags = []
         with open(path) as reader:
             try:
                 for line in reader:
@@ -163,6 +168,11 @@ class SonglistGenerator:
                             year = int(line.strip().replace('#YEAR:', '', 1))
                         except ValueError:
                             raise Exception(str(path) + ' cannot parse #YEAR')
+                    elif line.startswith('#TAGS'):
+                        linetags = list(map(str.strip, line.strip().replace('#TAGS:', '', 1).lower().split(',')))
+                        for important_tag in IMPORTANT_TAGS:
+                            if important_tag in linetags:
+                                tags.append(important_tag)
                     elif line.startswith('#'):
                         # do nothing as we're still processing tags
                         pass
@@ -173,7 +183,7 @@ class SonglistGenerator:
                             return None
                         elif artist is not None and title is not None and language is not None:
                             dmx = self._dmxCount(artist, title)
-                            return self._Song(artist, title, language, year, dmx)
+                            return self._Song(artist, title, language, year, dmx, tags)
                         elif artist is None:
                             raise Exception(str(path) + ' does not set #ARTIST')
                         elif title is None:
@@ -184,12 +194,13 @@ class SonglistGenerator:
                 raise Exception('error while loading ' + str(path)) from ude
 
     class _Song:
-        def __init__(self, artist: str, title: str, language: str, year: int, dmx: int):
+        def __init__(self, artist: str, title: str, language: str, year: int, dmx: int, tags: [str]):
             songtype = SongType.LOSSY
             self.artist = artist
             self.language = language
             self.year = year
             self.dmx = dmx
+            self.tags = tags
             # parse title
             types = {
                 '(Lossless)': SongType.LOSSLESS,
